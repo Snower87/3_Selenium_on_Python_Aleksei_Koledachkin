@@ -1,0 +1,44 @@
+import os
+import time
+import pickle
+
+
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common import alert
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# 1. Создаем объект options
+options = Options()
+options.add_argument("--window-size=1920,1080")
+options.add_argument("--disable-blink-features=AutomationControlled")
+#options.add_argument("--user-agent=Selenium")
+options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36")
+# Скрытие присутствия Selenium
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option('useAutomationExtension', False)
+
+# 2. Создание экземпляра веб-драйвера
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service, options=options)
+wait = WebDriverWait(driver, 10, poll_frequency=1)
+
+# Переход на веб-страницу
+driver.get("https://www.freeconferencecall.com/ru/ru/login")
+
+LOGIN_FIELD = driver.find_element(By.XPATH, "//input[@id='login_email']")
+PASSWORD_FIELD = driver.find_element(By.XPATH, "//input[@id='password']")
+SUBMIT_BUTTON = driver.find_element(By.XPATH, "//button[@id='loginformsubmit']")
+
+LOGIN_FIELD.send_keys("tab123@gmail.com")
+PASSWORD_FIELD.send_keys("hahaha2")
+SUBMIT_BUTTON.click()
+time.sleep(5)
+print("Нажали на кнопку")
+
+pickle.dump(driver.get_cookies(), open(os.getcwd() + "/cookies/cook.pkl", "wb"))
+print("Записали куки в файл")
